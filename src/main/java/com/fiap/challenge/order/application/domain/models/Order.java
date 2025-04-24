@@ -1,0 +1,123 @@
+package com.fiap.challenge.order.application.domain.models;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import com.fiap.challenge.order.application.domain.models.enums.OrderStatusEnum;
+
+public class Order {
+
+	private UUID id;
+	
+	private Customer customer;
+	
+	private BigDecimal total;
+	
+	private LocalDateTime createAt;
+	
+	private LocalDateTime updateAt;
+	
+	private OrderStatusEnum orderStatus;
+	
+	private List<OrderProduct> products;
+	
+	private String paymentId;
+	
+	private Boolean paymentStatus;
+
+	public Order(UUID id, Customer customer, BigDecimal total, LocalDateTime createAt, LocalDateTime updateAt,
+			OrderStatusEnum orderStatus, List<OrderProduct> products, String paymentId, Boolean paymentStatus) {
+		super();
+		this.id = id;
+		this.customer = customer;
+		this.total = total;
+		this.createAt = createAt;
+		this.updateAt = updateAt;
+		this.orderStatus = orderStatus;
+		this.products = products;
+		this.paymentId = paymentId;
+		this.paymentStatus = paymentStatus;
+	}
+	
+	public Order() {}
+	
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	public BigDecimal getTotal() {
+		return total;
+	}
+
+	public void setTotal(BigDecimal total) {
+		this.total = total;
+	}
+
+	public LocalDateTime getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(LocalDateTime createAt) {
+		this.createAt = createAt;
+	}
+
+	public LocalDateTime getUpdateAt() {
+		return updateAt;
+	}
+
+	public void setUpdateAt(LocalDateTime updateAt) {
+		this.updateAt = updateAt;
+	}
+
+	public OrderStatusEnum getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(OrderStatusEnum orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public List<OrderProduct> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<OrderProduct> products) {
+		this.products = products;
+	}
+
+	public String getPaymentId() {
+		return paymentId;
+	}
+
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
+	}
+
+	public Boolean getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(Boolean paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	};
+	
+	
+	
+	
+	
+	
+}
