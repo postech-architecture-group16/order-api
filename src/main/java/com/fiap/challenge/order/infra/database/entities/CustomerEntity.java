@@ -47,7 +47,7 @@ public class CustomerEntity {
 	}
 
 	public Customer toCustomer() {
-		return new Customer(id, name, documentId, email);
+		return new Customer(id, name, email, documentId);
 	}
 
 }

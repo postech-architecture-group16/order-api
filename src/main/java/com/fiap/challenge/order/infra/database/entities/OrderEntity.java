@@ -10,8 +10,11 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
+import com.fiap.challenge.order.application.domain.models.Customer;
+import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
 import com.fiap.challenge.order.application.domain.models.enums.OrderStatusEnum;
+import com.fiap.challenge.order.infra.models.dto.response.OrderResponseDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,8 +23,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,18 +35,20 @@ public class OrderEntity {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
 	private UUID id;
 	
-	@ManyToOne
-	@JoinColumn(name = "customer_id", referencedColumnName = "id")
-	private CustomerEntity customer;
+	@Column(name = "customer_id")
+	private UUID customerId;
 	
 	@Column(nullable = false)
 	private BigDecimal total;
+	
+	@Column(name = "order_number")
+	private Long orderNumber;
 	
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "products", columnDefinition = "json")
 	private List<OrderProduct> products;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	@Enumerated(EnumType.STRING)
 	private OrderStatusEnum status;
 	
@@ -56,5 +60,40 @@ public class OrderEntity {
 
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+
+	
+	public OrderEntity(){}
+	
+	public OrderEntity(UUID id, UUID customerId, BigDecimal total, List<OrderProduct> products,
+			OrderStatusEnum status, Boolean isPaid, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		this.id = id;
+		this.customerId = customerId;
+		this.total = total;
+		this.products = products;
+		this.status = status;
+		this.isPaid = isPaid;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+	
+	public OrderEntity(Order order) {
+		this.id = order.getId();
+		this.customerId = order.getCustomer().getId();
+		this.total = order.getTotal();
+		this.orderNumber = order.getOrderNumber();
+		this.products = order.getProducts();
+		this.status = order.getOrderStatus();
+		this.isPaid = order.getIsPaid();
+		this.createdAt = order.getCreateAt();
+		this.updatedAt = order.getUpdateAt();
+	}
+	
+	public Order toOrder() {
+		return new Order(id, new Customer(customerId), total, orderNumber, createdAt, updatedAt, status, products,null,  isPaid);
+	}
+	
+	public OrderResponseDTO toOrderResponse() {
+		return new OrderResponseDTO(id,orderNumber);
+	}
 
 }

@@ -13,7 +13,6 @@ public class Customer {
 	private String documentId;
 
 	public Customer(UUID id, String name, String email, String documentId) {
-		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
@@ -23,11 +22,14 @@ public class Customer {
 	public Customer() {
 	}
 	
-	public Customer(String name, String email, String documentId) {
-		super();
+	public Customer(String name, String email, String customerId) {
 		this.name = name;
 		this.email = email;
-		this.documentId = documentId;
+		this.documentId = customerId;
+	}
+	
+	public Customer(UUID customerId) {
+		this.id = customerId;
 	}
 
 	public UUID getId() {

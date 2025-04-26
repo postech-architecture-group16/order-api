@@ -1,7 +1,7 @@
 package com.fiap.challenge.order.application.domain.models.enums;
 
 public enum OrderStatusEnum {
-		RRECEBIDO("RECEBIDO"),
+		RECEBIDO("RECEBIDO"),
 		EM_PREPARACAO("EM_PREPARACAO"),
 		PRONTO("PRONTO"),
 		FINALIZADO("FINALIZADO");

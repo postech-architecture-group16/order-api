@@ -15,6 +15,8 @@ public class Order {
 	
 	private BigDecimal total;
 	
+	private Long orderNumber;
+	
 	private LocalDateTime createAt;
 	
 	private LocalDateTime updateAt;
@@ -25,20 +27,26 @@ public class Order {
 	
 	private String paymentId;
 	
-	private Boolean paymentStatus;
+	private Boolean isPaid;
 
-	public Order(UUID id, Customer customer, BigDecimal total, LocalDateTime createAt, LocalDateTime updateAt,
-			OrderStatusEnum orderStatus, List<OrderProduct> products, String paymentId, Boolean paymentStatus) {
-		super();
+	public Order(UUID id, Customer customer, BigDecimal total, Long orderNumber,LocalDateTime createAt, LocalDateTime updateAt,
+			OrderStatusEnum orderStatus, List<OrderProduct> products, String paymentId, Boolean isPaid) {
 		this.id = id;
 		this.customer = customer;
 		this.total = total;
+		this.orderNumber = orderNumber;
 		this.createAt = createAt;
 		this.updateAt = updateAt;
 		this.orderStatus = orderStatus;
 		this.products = products;
 		this.paymentId = paymentId;
-		this.paymentStatus = paymentStatus;
+		this.isPaid = isPaid;
+	}
+	
+	public Order(Customer customer, List<OrderProduct> products, Boolean isPaid) {
+		this.customer = customer;
+		this.products = products;
+		this.isPaid = isPaid;
 	}
 	
 	public Order() {}
@@ -107,17 +115,22 @@ public class Order {
 		this.paymentId = paymentId;
 	}
 
-	public Boolean getPaymentStatus() {
-		return paymentStatus;
+	public Boolean getIsPaid() {
+		return isPaid;
 	}
 
-	public void setPaymentStatus(Boolean paymentStatus) {
-		this.paymentStatus = paymentStatus;
-	};
+	public void setIsPaid(Boolean isPaid) {
+		this.isPaid = isPaid;
+	}
+
+	public Long getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(Long orderNumber) {
+		this.orderNumber = orderNumber;
+	}
 	
 	
-	
-	
-	
-	
+
 }
