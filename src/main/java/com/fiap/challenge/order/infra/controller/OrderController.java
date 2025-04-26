@@ -34,6 +34,8 @@ public class OrderController {
 				new Customer(UUID.fromString(orderRequestDTO.customerId())), 
 				orderRequestDTO.products(), Boolean.FALSE));
 		OrderResponseDTO orderResponse = new OrderResponseDTO(order);
+		// @TODO enviar para criar um novo pagamento
+		
 		return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
 	}
 	

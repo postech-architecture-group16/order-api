@@ -64,11 +64,12 @@ public class OrderEntity {
 	
 	public OrderEntity(){}
 	
-	public OrderEntity(UUID id, UUID customerId, BigDecimal total, List<OrderProduct> products,
+	public OrderEntity(UUID id, UUID customerId, BigDecimal total, Long orderNumber, List<OrderProduct> products,
 			OrderStatusEnum status, Boolean isPaid, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.customerId = customerId;
 		this.total = total;
+		this.orderNumber = orderNumber;
 		this.products = products;
 		this.status = status;
 		this.isPaid = isPaid;
