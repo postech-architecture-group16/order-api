@@ -23,7 +23,6 @@ import com.fiap.challenge.order.application.domain.models.Customer;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
 import com.fiap.challenge.order.application.domain.models.enums.OrderStatusEnum;
-import com.fiap.challenge.order.infra.database.entities.CustomerEntity;
 import com.fiap.challenge.order.infra.database.entities.OrderEntity;
 import com.fiap.challenge.order.infra.database.repositories.CustomersRepository;
 import com.fiap.challenge.order.infra.database.repositories.OrderRepository;

@@ -92,9 +92,4 @@ public class OrderEntity {
 	public Order toOrder() {
 		return new Order(id, new Customer(customerId), total, orderNumber, createdAt, updatedAt, status, products,null,  isPaid);
 	}
-	
-	public OrderResponseDTO toOrderResponse() {
-		return new OrderResponseDTO(id,orderNumber);
-	}
-
 }

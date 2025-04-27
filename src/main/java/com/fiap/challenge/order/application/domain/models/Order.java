@@ -49,8 +49,6 @@ public class Order {
 		this.isPaid = isPaid;
 	}
 	
-	public Order() {}
-	
 	public UUID getId() {
 		return id;
 	}

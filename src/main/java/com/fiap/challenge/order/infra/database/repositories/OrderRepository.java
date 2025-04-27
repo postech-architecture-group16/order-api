@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import com.fiap.challenge.order.infra.database.entities.OrderEntity;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, UUID>{
-	@Query("SELECT p.orderNumber FROM OrderEntity p ORDER BY id DESC LIMIT 1")
+	@Query("SELECT p.orderNumber FROM OrderEntity p ORDER BY createdAt DESC LIMIT 1")
 	Long findLastOrderNumber();
 }

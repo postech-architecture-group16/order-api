@@ -36,13 +36,6 @@ public class Product {
 		this(id, name, category, price, description,  null);
 	}
 
-	public void update(Product product) {
-		this.name = Optional.ofNullable(product).map(Product::getName).orElse(this.name);
-		this.category = Optional.ofNullable(product).map(Product::getCategory).orElse(this.category);
-		this.price = Optional.ofNullable(product).map(Product::getPrice).orElse(this.price);
-		this.description = Optional.ofNullable(product).map(Product::getDescription).orElse(this.description);
-	}
-
 	public UUID getId() {
 		return id;
 	}
