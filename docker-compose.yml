@@ -1,0 +1,60 @@
+services:
+  sonarqube:
+    image: sonarqube:lts-community
+    depends_on:
+      - postgres-db
+    networks:
+      - sonar_net
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres-db:5432/postgres
+      SONAR_JDBC_USERNAME: postgres
+      SONAR_JDBC_PASSWORD: 123456
+      SONAR_JDBC_DRIVER: org.postgresql.Driver
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_logs:/opt/sonarqube/logs
+  postgres-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    networks:
+      - sonar_net
+  rabbitmq:
+      image: rabbitmq:3.9-management
+      restart: always
+      ports:
+        - "5672:5672"
+        - "15672:15672" 
+      volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
+        - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+        - ./definitions.json:/etc/rabbitmq/definitions.json
+        - ./rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
+      networks:
+        - sonar_net
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=fiap
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+volumes:
+    rabbitmq_data:
+    sonar_data:
+    sonar_logs:
+    postgres-db:
+networks:
+  sonar_net:
+    driver: bridge
