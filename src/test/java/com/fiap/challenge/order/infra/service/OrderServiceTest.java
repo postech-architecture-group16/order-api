@@ -1,6 +1,8 @@
 package com.fiap.challenge.order.infra.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -159,7 +161,6 @@ class OrderServiceTest {
 	        		List.of(orderProduct), 
 	        		"paymentId",
 	        		false, 
-	        		LocalDateTime.now(), 
 	        		LocalDateTime.now());
 
 	        when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
@@ -177,6 +178,31 @@ class OrderServiceTest {
 	        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
 	        Assertions.assertThrows(RuntimeException.class, () -> orderService.findById(orderId));
+	    }
+	    
+
+	    @Test
+	    void confirmPaymentShouldUpdateOrderWhenOrderExists() {
+	        // Arrange
+	        UUID orderId = UUID.randomUUID();
+	        String paymentId = "payment-123";
+	        Boolean isPaid = true;
+	        Long orderNumber = 456L;
+
+	        OrderEntity existingOrder = new OrderEntity();
+	        existingOrder.setId(orderId);
+
+	        when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
+
+	        // Act
+	        orderService.confirmPayment(orderId, paymentId, isPaid, orderNumber);
+
+	        // Assert
+	        verify(orderRepository, times(1)).findById(orderId);
+	        verify(orderRepository, times(1)).save(existingOrder);
+
+	        Assertions.assertEquals(paymentId, existingOrder.getPaymentId());
+	        Assertions.assertEquals(isPaid, existingOrder.getIsPaid());
 	    }
 	
 }

@@ -68,7 +68,7 @@ public class OrderEntity {
 			BigDecimal total, 
 			List<OrderProduct> products,
 			String paymentId,
-			Boolean isPaid, LocalDateTime createdAt, LocalDateTime updatedAt) {
+			Boolean isPaid, LocalDateTime createdAt) {
 		this.id = id;
 		this.customerId = customerId;
 		this.total = total;
@@ -76,7 +76,6 @@ public class OrderEntity {
 		this.paymentId = paymentId;
 		this.isPaid = isPaid;
 		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
 	}
 	
 	public OrderEntity(Order order) {

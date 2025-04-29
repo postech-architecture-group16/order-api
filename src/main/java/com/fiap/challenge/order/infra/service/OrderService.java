@@ -13,6 +13,7 @@ import com.fiap.challenge.order.application.domain.models.Customer;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
 import com.fiap.challenge.order.application.domain.models.Product;
+import com.fiap.challenge.order.application.usecases.order.ConfirmPaymentUseCase;
 import com.fiap.challenge.order.application.usecases.order.CreateOrderUseCase;
 import com.fiap.challenge.order.application.usecases.order.FindOrderUseCase;
 import com.fiap.challenge.order.infra.database.entities.CustomerEntity;
@@ -22,7 +23,7 @@ import com.fiap.challenge.order.infra.database.repositories.OrderRepository;
 import com.fiap.challenge.order.infra.database.repositories.ProductRepository;
 
 @Service
-public class OrderService implements CreateOrderUseCase, FindOrderUseCase {
+public class OrderService implements CreateOrderUseCase, FindOrderUseCase, ConfirmPaymentUseCase {
 
 	private OrderRepository orderRepository;
 	private CustomersRepository customersRepository;
@@ -82,6 +83,17 @@ public class OrderService implements CreateOrderUseCase, FindOrderUseCase {
 			Product product = productRepository.findById(uuid).get().toProduct();
 			return new OrderProduct(product.getId(), product.getPrice(), product.getName(), order.getCreateAt());
 		}).toList();
+	}
+
+	@Override
+	public void confirmPayment(UUID orderId, String paymentId, Boolean isPaid, Long orderNumber) {
+		OrderEntity entity = orderRepository.findById(orderId)
+				.orElseThrow(() -> new RuntimeException("Order not found"));
+		entity.setPaymentId(paymentId);
+		entity.setIsPaid(isPaid);
+		
+		orderRepository.save(entity);
+		
 	}
 
 
