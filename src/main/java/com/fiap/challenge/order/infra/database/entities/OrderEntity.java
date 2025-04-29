@@ -90,9 +90,9 @@ public class OrderEntity {
 	}
 	
 	public Order toOrder() {
-		return new Order(id, null, total, orderNumber, createdAt, products, isPaid);
+		return new Order(id, null, total, orderNumber, createdAt, products, paymentId, isPaid);
 	}
 	public Order toOrder(Customer customer) {
-		return new Order(id, customer, total, orderNumber, createdAt, products, isPaid);
+		return new Order(id, customer, total, orderNumber, createdAt, products, paymentId, isPaid);
 	}
 }

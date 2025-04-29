@@ -26,13 +26,14 @@ public class Order {
 	private Boolean isPaid;
 
 	public Order(UUID id, Customer customer, BigDecimal total, Long orderNumber,LocalDateTime createAt,
-			List<OrderProduct> products, Boolean isPaid) {
+			List<OrderProduct> products, String paymentId, Boolean isPaid) {
 		this.id = id;
 		this.customer = customer;
 		this.total = total;
 		this.orderNumber = orderNumber;
 		this.createAt = createAt;
 		this.products = products;
+		this.paymentId = paymentId;
 		this.isPaid = isPaid;
 	}
 	

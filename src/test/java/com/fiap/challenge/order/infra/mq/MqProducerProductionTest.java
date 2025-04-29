@@ -28,16 +28,16 @@ import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
 
 @ExtendWith(MockitoExtension.class)
-class MqProducerTest {
+class MqProducerProductionTest {
 
 	@Mock
     private RabbitTemplate rabbitTemplate;
 
     @Mock
-    private Queue queue;
+    private Queue productionQueue;
 
     @InjectMocks
-    private MqProducer mqProducer;
+    private MqProducerProduction mqProducerProduction;
 
     private Order order;
     
@@ -57,12 +57,12 @@ class MqProducerTest {
             Boolean.TRUE
         );
 
-        when(queue.getName()).thenReturn("test-queue");
+        when(productionQueue.getName()).thenReturn("test-queue");
     }
 
     @Test
     void sendShouldCallRabbitTemplateWithCorrectArguments() throws JsonProcessingException {
-        mqProducer.send(order);
+        mqProducerProduction.send(order);
 
         verify(rabbitTemplate, times(1)).convertAndSend(eq("test-queue"), anyString());
     }
@@ -71,6 +71,6 @@ class MqProducerTest {
     void sendShouldThrowAmqpExceptionWhenRabbitTemplateFails() {
         doThrow(new AmqpException("AMQP error")).when(rabbitTemplate).convertAndSend(anyString(), anyString());
 
-        Assertions.assertThrows(AmqpException.class, () -> mqProducer.send(order));
+        Assertions.assertThrows(AmqpException.class, () -> mqProducerProduction.send(order));
     }
 }

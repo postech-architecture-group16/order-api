@@ -11,8 +11,16 @@ public class MqSenderConfig {
 	@Value("${queue.name.producer.payment}")
 	private String message;
 	
+    @Value("${queue.name.producer.production}")
+    private String productionQueueName;
+
 	@Bean
 	public Queue queue() {
 		return new Queue(message, true);
 	}
+	
+    @Bean
+    public Queue productionQueue() {
+        return new Queue(productionQueueName, true);
+    }
 }
