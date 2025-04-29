@@ -1,6 +1,8 @@
 package com.fiap.challenge.order.infra.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,7 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.AmqpException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fiap.challenge.order.application.domain.models.Customer;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
@@ -30,6 +34,7 @@ import com.fiap.challenge.order.infra.database.entities.ProductEntity;
 import com.fiap.challenge.order.infra.database.repositories.CustomersRepository;
 import com.fiap.challenge.order.infra.database.repositories.OrderRepository;
 import com.fiap.challenge.order.infra.database.repositories.ProductRepository;
+import com.fiap.challenge.order.infra.mq.MqProducerProduction;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -40,13 +45,14 @@ class OrderServiceTest {
 	@Mock OrderRepository orderRepository;
 	@Mock CustomersRepository customersRepository;
 	@Mock ProductRepository productRepository;
+	@Mock MqProducerProduction mqProducerProduction;
 	
 	private OrderProduct orderProduct;
 	
 	@BeforeEach
 	public void setUp() {
 		orderProduct = new OrderProduct( UUID.randomUUID(), BigDecimal.valueOf(10.0), "mockProduct", LocalDateTime.now());
-		orderService = new OrderService(orderRepository, customersRepository, productRepository);
+		orderService = new OrderService(orderRepository, customersRepository, productRepository, mqProducerProduction);
 	}
 	
 	 @Test
@@ -61,6 +67,7 @@ class OrderServiceTest {
 	        		2L,
 	        		LocalDateTime.now(),
 	        		List.of(orderProduct,orderProduct),
+	        		"paymentId",
 	        		false);
 	        Product product = new Product(orderProduct.getProductId(), 
 	        		orderProduct.getProductName(), 
@@ -95,6 +102,7 @@ class OrderServiceTest {
 	        		1L,
 	        		LocalDateTime.now(),
 	        		List.of(orderProduct,orderProduct),
+	        		"paymentId",
 	        		false);
 	        Product product = new Product(orderProduct.getProductId(), orderProduct.getProductName(), CategorieEnums.LANCHE, BigDecimal.valueOf(10.0),"Description1");
 	        OrderEntity savedEntity = new OrderEntity(order);
@@ -125,6 +133,7 @@ class OrderServiceTest {
 	        		2L,
 	        		LocalDateTime.now(),
 	        		List.of(orderProduct,orderProduct),
+	        		"paymentId",
 	        		false);
 	        OrderEntity savedEntity = new OrderEntity(order);
 	        ProductEntity productEntity = new ProductEntity(product); 
@@ -182,7 +191,7 @@ class OrderServiceTest {
 	    
 
 	    @Test
-	    void confirmPaymentShouldUpdateOrderWhenOrderExists() {
+	    void confirmPaymentShouldUpdateOrderAndSendToMq() throws JsonProcessingException {
 	        // Arrange
 	        UUID orderId = UUID.randomUUID();
 	        String paymentId = "payment-123";
@@ -193,16 +202,87 @@ class OrderServiceTest {
 	        existingOrder.setId(orderId);
 
 	        when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
+	        when(orderRepository.save(existingOrder)).thenReturn(existingOrder);
 
 	        // Act
 	        orderService.confirmPayment(orderId, paymentId, isPaid, orderNumber);
 
 	        // Assert
 	        verify(orderRepository, times(1)).findById(orderId);
-	        verify(orderRepository, times(1)).save(existingOrder);
 
 	        Assertions.assertEquals(paymentId, existingOrder.getPaymentId());
 	        Assertions.assertEquals(isPaid, existingOrder.getIsPaid());
+	    }
+
+	    @Test
+	    void confirmPaymentShouldThrowExceptionWhenOrderNotFound() throws JsonProcessingException, AmqpException {
+	        // Arrange
+	        UUID orderId = UUID.randomUUID();
+	        String paymentId = "payment-123";
+	        Boolean isPaid = true;
+	        Long orderNumber = 456L;
+
+	        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+	        // Act & Assert
+	        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> {
+	            orderService.confirmPayment(orderId, paymentId, isPaid, orderNumber);
+	        });
+
+	        Assertions.assertEquals("Order not found", exception.getMessage());
+	        verify(orderRepository, times(1)).findById(orderId);
+	        verify(orderRepository, never()).save(any(OrderEntity.class));
+	        verify(mqProducerProduction, never()).send(any());
+	    }
+
+	    @Test
+	    void confirmPaymentShouldThrowExceptionWhenJsonProcessingFails() throws JsonProcessingException {
+	        // Arrange
+	        UUID orderId = UUID.randomUUID();
+	        String paymentId = "payment-123";
+	        Boolean isPaid = true;
+	        Long orderNumber = 456L;
+
+	        OrderEntity existingOrder = new OrderEntity();
+	        existingOrder.setId(orderId);
+
+	        when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
+	        when(orderRepository.save(existingOrder)).thenReturn(existingOrder);
+	        doThrow(JsonProcessingException.class).when(mqProducerProduction).send(any());
+
+	        // Act & Assert
+	        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> {
+	            orderService.confirmPayment(orderId, paymentId, isPaid, orderNumber);
+	        });
+
+	        Assertions.assertEquals("Error while converting order to JSON", exception.getMessage());
+	        verify(orderRepository, times(1)).findById(orderId);
+	        verify(mqProducerProduction, times(1)).send(any());
+	    }
+
+	    @Test
+	    void confirmPaymentShouldThrowExceptionWhenAmqpFails() throws JsonProcessingException {
+	        // Arrange
+	        UUID orderId = UUID.randomUUID();
+	        String paymentId = "payment-123";
+	        Boolean isPaid = true;
+	        Long orderNumber = 456L;
+
+	        OrderEntity existingOrder = new OrderEntity();
+	        existingOrder.setId(orderId);
+
+	        when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
+	        when(orderRepository.save(existingOrder)).thenReturn(existingOrder);
+	        doThrow(new RuntimeException("AMQP error")).when(mqProducerProduction).send(any());
+
+	        // Act & Assert
+	        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> {
+	            orderService.confirmPayment(orderId, paymentId, isPaid, orderNumber);
+	        });
+
+	        Assertions.assertEquals("AMQP error", exception.getMessage());
+	        verify(orderRepository, times(1)).findById(orderId);
+	        verify(mqProducerProduction, times(1)).send(any());
 	    }
 	
 }

@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.amqp.AmqpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fiap.challenge.order.application.domain.models.Customer;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
@@ -21,6 +23,7 @@ import com.fiap.challenge.order.infra.database.entities.OrderEntity;
 import com.fiap.challenge.order.infra.database.repositories.CustomersRepository;
 import com.fiap.challenge.order.infra.database.repositories.OrderRepository;
 import com.fiap.challenge.order.infra.database.repositories.ProductRepository;
+import com.fiap.challenge.order.infra.mq.MqProducerProduction;
 
 @Service
 public class OrderService implements CreateOrderUseCase, FindOrderUseCase, ConfirmPaymentUseCase {
@@ -28,14 +31,17 @@ public class OrderService implements CreateOrderUseCase, FindOrderUseCase, Confi
 	private OrderRepository orderRepository;
 	private CustomersRepository customersRepository;
 	private ProductRepository productRepository;
+	private MqProducerProduction mqProducerProduction;
 	
     
 	public OrderService(@Autowired OrderRepository orderRepository, 
 			@Autowired CustomersRepository customersRepository,
-			@Autowired ProductRepository productRepository) {
+			@Autowired ProductRepository productRepository,
+			@Autowired MqProducerProduction mqProducerProduction) {
 		this.orderRepository = orderRepository;
 		this.customersRepository = customersRepository;
 		this.productRepository = productRepository;
+		this.mqProducerProduction = mqProducerProduction;
 	}
 
 	@Override
@@ -45,7 +51,7 @@ public class OrderService implements CreateOrderUseCase, FindOrderUseCase, Confi
 
 		order.setTotal(total);
 		order.setCreateAt(LocalDateTime.now());
-		order.setOrderNumber(Objects.equals(0L,nextOrderNumber) ? 1 : nextOrderNumber+1);
+		order.setOrderNumber(Objects.equals(0L,nextOrderNumber) ? 1 : ++nextOrderNumber);
 		order.setProducts(getOrderProducts(order));
 		
 		if (Objects.nonNull(order.getCustomer())) {
@@ -93,6 +99,14 @@ public class OrderService implements CreateOrderUseCase, FindOrderUseCase, Confi
 		entity.setIsPaid(isPaid);
 		
 		orderRepository.save(entity);
+		
+		try {
+			mqProducerProduction.send(orderRepository.save(entity).toOrder());
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Error while converting order to JSON", e);
+		} catch (AmqpException e) {
+			throw new RuntimeException("Error while sending order to MQ", e);
+		}
 		
 	}
 
