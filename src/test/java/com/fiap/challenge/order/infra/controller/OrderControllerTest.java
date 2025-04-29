@@ -15,14 +15,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.AmqpException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fiap.challenge.order.application.domain.models.Customer;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
 import com.fiap.challenge.order.infra.models.dto.request.OrderRequestDTO;
 import com.fiap.challenge.order.infra.models.dto.response.OrderResponseDTO;
+import com.fiap.challenge.order.infra.mq.MqProducer;
 import com.fiap.challenge.order.infra.service.OrderService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -32,6 +35,9 @@ class OrderControllerTest {
 
     @Mock
     private OrderService orderService;
+    
+    @Mock
+    private MqProducer mqProducer;
 
     @InjectMocks
     private OrderController orderController;
@@ -41,14 +47,27 @@ class OrderControllerTest {
     
     @BeforeEach
     public void setUp() {
-    	product = new OrderProduct(UUID.randomUUID(), UUID.randomUUID(),UUID.randomUUID(), null,  "mockProduct",LocalDateTime.now());
+    	product = new OrderProduct(UUID.randomUUID(), null,  "mockProduct",LocalDateTime.now());
 		orderRequestDTO = new OrderRequestDTO("123e4567-e89b-12d3-a456-426614174000", List.of(product));
-		
 	}
 
     @Test
-    void createOrderShouldReturnCreatedResponseWhenValidRequest() {
+    void createOrderShouldReturnCreatedResponseWhenValidRequest() throws JsonProcessingException, AmqpException {
         Order order = new Order(new Customer(UUID.fromString(orderRequestDTO.customerId())), orderRequestDTO.products(), Boolean.FALSE);
+        OrderResponseDTO expectedResponse = new OrderResponseDTO(order);
+
+        when(orderService.createOrder(any(Order.class))).thenReturn(order);
+
+        ResponseEntity<OrderResponseDTO> response = orderController.createOrder(orderRequestDTO);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+    
+    @Test
+    void createOrderShouldReturnCreatedWithCustomerNullResponseWhenValidRequest() throws JsonProcessingException, AmqpException {
+		orderRequestDTO = new OrderRequestDTO(null, List.of(product));
+        Order order = new Order(null, orderRequestDTO.products(), Boolean.FALSE);
         OrderResponseDTO expectedResponse = new OrderResponseDTO(order);
 
         when(orderService.createOrder(any(Order.class))).thenReturn(order);

@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.fiap.challenge.order.application.domain.models.enums.OrderStatusEnum;
-
 public class Order {
 
 	private UUID id;
@@ -21,25 +19,20 @@ public class Order {
 	
 	private LocalDateTime updateAt;
 	
-	private OrderStatusEnum orderStatus;
-	
 	private List<OrderProduct> products;
 	
 	private String paymentId;
 	
 	private Boolean isPaid;
 
-	public Order(UUID id, Customer customer, BigDecimal total, Long orderNumber,LocalDateTime createAt, LocalDateTime updateAt,
-			OrderStatusEnum orderStatus, List<OrderProduct> products, String paymentId, Boolean isPaid) {
+	public Order(UUID id, Customer customer, BigDecimal total, Long orderNumber,LocalDateTime createAt,
+			List<OrderProduct> products, Boolean isPaid) {
 		this.id = id;
 		this.customer = customer;
 		this.total = total;
 		this.orderNumber = orderNumber;
 		this.createAt = createAt;
-		this.updateAt = updateAt;
-		this.orderStatus = orderStatus;
 		this.products = products;
-		this.paymentId = paymentId;
 		this.isPaid = isPaid;
 	}
 	
@@ -51,10 +44,6 @@ public class Order {
 	
 	public UUID getId() {
 		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
 	}
 
 	public Customer getCustomer() {
@@ -89,18 +78,10 @@ public class Order {
 		this.updateAt = updateAt;
 	}
 
-	public OrderStatusEnum getOrderStatus() {
-		return orderStatus;
-	}
-
-	public void setOrderStatus(OrderStatusEnum orderStatus) {
-		this.orderStatus = orderStatus;
-	}
-
 	public List<OrderProduct> getProducts() {
 		return products;
 	}
-
+	
 	public void setProducts(List<OrderProduct> products) {
 		this.products = products;
 	}

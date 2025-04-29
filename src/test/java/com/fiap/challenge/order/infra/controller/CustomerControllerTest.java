@@ -1,8 +1,7 @@
 package com.fiap.challenge.order.infra.controller;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,7 @@ import com.fiap.challenge.order.infra.models.dto.request.CustomerRequestDTO;
 import com.fiap.challenge.order.infra.service.CustomerService;
 
 @ExtendWith(MockitoExtension.class)
-public class CustomerControllerTest {
+class CustomerControllerTest {
 
     @InjectMocks
     private CustomerController customerController;
@@ -27,7 +26,7 @@ public class CustomerControllerTest {
     private CustomerService customerService;
 
     @Test
-    public void createCustomerShouldReturnCreatedResponseWhenValidRequest() {
+    void createCustomerShouldReturnCreatedResponseWhenValidRequest() {
         CustomerRequestDTO requestDTO = new CustomerRequestDTO("name", "email", "documentId");
         Customer expectedCustomer = new Customer("name", "email", "documentId");
 
@@ -44,7 +43,7 @@ public class CustomerControllerTest {
         String documentId = "123456789";
         Customer expectedCustomer = new Customer("name", "email", "documentId");
 
-        when(customerService.findCustomerByDocumentId(eq(documentId))).thenReturn(expectedCustomer);
+        when(customerService.findCustomerByDocumentId(documentId)).thenReturn(expectedCustomer);
 
         ResponseEntity<Customer> response = customerController.findByDocumentId(documentId);
 

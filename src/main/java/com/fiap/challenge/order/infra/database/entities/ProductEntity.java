@@ -15,9 +15,15 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "product")
+@Getter
+@Setter
+@NoArgsConstructor
 public class ProductEntity {
 
 	@Id
@@ -32,12 +38,12 @@ public class ProductEntity {
 
 	private String description;
 
-
 	@CreationTimestamp
 	private LocalDateTime createdAt;
 
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+
 
 	public ProductEntity(Product product) {
 		this.id = product.getId();
@@ -48,6 +54,6 @@ public class ProductEntity {
 	}
 
 	public Product toProduct() {
-		return new Product(id, name, category, price, description, createdAt);
+		return new Product(id, name, category, price, description);
 	}
 }

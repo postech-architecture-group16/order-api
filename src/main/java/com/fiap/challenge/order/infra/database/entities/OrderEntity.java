@@ -3,6 +3,7 @@ package com.fiap.challenge.order.infra.database.entities;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,21 +14,22 @@ import org.hibernate.type.SqlTypes;
 import com.fiap.challenge.order.application.domain.models.Customer;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
-import com.fiap.challenge.order.application.domain.models.enums.OrderStatusEnum;
-import com.fiap.challenge.order.infra.models.dto.response.OrderResponseDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "orders")
+@Getter
+@Setter
+@NoArgsConstructor
 public class OrderEntity {
 
 	@Id
@@ -48,9 +50,8 @@ public class OrderEntity {
 	@Column(name = "products", columnDefinition = "json")
 	private List<OrderProduct> products;
 	
-	@Column(nullable = true)
-	@Enumerated(EnumType.STRING)
-	private OrderStatusEnum status;
+	@Column(name = "payment_id")
+	private String paymentId;
 	
 	@Column(nullable = false)
 	private Boolean isPaid;
@@ -62,16 +63,17 @@ public class OrderEntity {
 	private LocalDateTime updatedAt;
 
 	
-	public OrderEntity(){}
-	
-	public OrderEntity(UUID id, UUID customerId, BigDecimal total, Long orderNumber, List<OrderProduct> products,
-			OrderStatusEnum status, Boolean isPaid, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public OrderEntity(UUID id, 
+			UUID customerId, 
+			BigDecimal total, 
+			List<OrderProduct> products,
+			String paymentId,
+			Boolean isPaid, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.customerId = customerId;
 		this.total = total;
-		this.orderNumber = orderNumber;
 		this.products = products;
-		this.status = status;
+		this.paymentId = paymentId;
 		this.isPaid = isPaid;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -79,17 +81,19 @@ public class OrderEntity {
 	
 	public OrderEntity(Order order) {
 		this.id = order.getId();
-		this.customerId = order.getCustomer().getId();
+		this.customerId = Objects.nonNull(order.getCustomer()) ? order.getCustomer().getId() : null;
 		this.total = order.getTotal();
 		this.orderNumber = order.getOrderNumber();
 		this.products = order.getProducts();
-		this.status = order.getOrderStatus();
 		this.isPaid = order.getIsPaid();
 		this.createdAt = order.getCreateAt();
 		this.updatedAt = order.getUpdateAt();
 	}
 	
 	public Order toOrder() {
-		return new Order(id, new Customer(customerId), total, orderNumber, createdAt, updatedAt, status, products,null,  isPaid);
+		return new Order(id, null, total, orderNumber, createdAt, products, isPaid);
+	}
+	public Order toOrder(Customer customer) {
+		return new Order(id, customer, total, orderNumber, createdAt, products, isPaid);
 	}
 }

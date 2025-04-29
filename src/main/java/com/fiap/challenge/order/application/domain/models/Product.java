@@ -1,8 +1,6 @@
 package com.fiap.challenge.order.application.domain.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.fiap.challenge.order.application.domain.models.enums.CategorieEnums;
@@ -20,20 +18,12 @@ public class Product {
 	private String description;
 
 
-	private final LocalDateTime createdAt;
-
-	public Product(UUID id, String name, CategorieEnums category, BigDecimal price, String description,
-                    LocalDateTime createdAt) {
+	public Product(UUID id, String name, CategorieEnums category, BigDecimal price, String description) {
 		this.id = id;
 		this.name = name;
 		this.category = category;
 		this.price = price;
 		this.description = description;
-		this.createdAt = createdAt;
-	}
-
-	public Product(UUID id, String name, CategorieEnums category, BigDecimal price, String description) {
-		this(id, name, category, price, description,  null);
 	}
 
 	public UUID getId() {
@@ -54,10 +44,6 @@ public class Product {
 
 	public String getDescription() {
 		return description;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
 	}
 
 }

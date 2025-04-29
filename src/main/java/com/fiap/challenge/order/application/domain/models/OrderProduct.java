@@ -5,10 +5,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class OrderProduct {
-
-	private UUID id;
-	
-	private UUID orderId;
 	
 	private UUID productId;
 
@@ -18,35 +14,17 @@ public class OrderProduct {
 	
 	private LocalDateTime createdAt;
 
-	public OrderProduct(UUID id, UUID orderId, UUID productId, BigDecimal price, String productName,
+	public OrderProduct( 
+			UUID productId, 
+			BigDecimal price, 
+			String productName,
 			LocalDateTime createdAt) {
-		this.id = id;
-		this.orderId = orderId;
 		this.productId = productId;
 		this.price = price;
 		this.productName = productName;
 		this.createdAt = createdAt;
 	}
-	
-	public OrderProduct() {
-	}
 
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public UUID getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(UUID orderId) {
-		this.orderId = orderId;
-	}
 
 	public UUID getProductId() {
 		return productId;
@@ -75,9 +53,8 @@ public class OrderProduct {
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
-	
+
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-	
 }

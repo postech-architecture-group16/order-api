@@ -21,7 +21,7 @@ import com.fiap.challenge.order.application.domain.models.enums.CategorieEnums;
 import com.fiap.challenge.order.infra.service.ProductService;
 
 @ExtendWith(MockitoExtension.class)
-public class ProductsControllerTest {
+class ProductsControllerTest {
 
 	@Mock
     private ProductService productService;
