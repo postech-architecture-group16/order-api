@@ -127,17 +127,11 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
-						<!-- configuration>
+						<configuration>
 							<excludes>
-								<exclude>br/com/fiap/techchallenge/order/OrderApplication.class</exclude>
-								<exclude>br/com/fiap/techchallenge/order/infra/entrypoint/controller/handler/ErrorsValidateData.class</exclude>
-								<exclude>br/com/fiap/techchallenge/order/infra/entrypoint/controller/validator/NullOrValidUUIDValidator.class</exclude>
-								<exclude>br/com/fiap/techchallenge/order/infra/config/openapi/SpringDocConfigurations.class</exclude>
-								<exclude>br/com/fiap/techchallenge/order/infra/config/queue/SqsConfig.class</exclude>
-								<exclude>br/com/fiap/techchallenge/order/infra/entrypoint/consumer/config/ObjectMapperConfig.class</exclude>
-								<exclude>br/com/fiap/techchallenge/order/infra/gateway/producer/config/JacksonConfig.class</exclude>
+								<exclude>com/fiap/challenge/order/OrderApiApplication.class</exclude>
 							</excludes>
-						</configuration-->
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
