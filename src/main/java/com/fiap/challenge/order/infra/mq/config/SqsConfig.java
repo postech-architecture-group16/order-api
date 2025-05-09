@@ -1,12 +1,13 @@
 package com.fiap.challenge.order.infra.mq.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.Generated;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
-import java.net.URI;
-
 @Configuration
+@Generated
 public class SqsConfig {
 
 	@Bean
