@@ -21,17 +21,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
+
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class MqProducerTest {
 
 	@Mock
-    private RabbitTemplate rabbitTemplate;
+    private SqsTemplate sqsTemplate;
 
     @Mock
     private Queue queue;
@@ -57,20 +61,18 @@ class MqProducerTest {
             Boolean.TRUE
         );
 
-        when(queue.getName()).thenReturn("test-queue");
+        when(queue.getName()).thenReturn("order-payment");
     }
 
     @Test
     void sendShouldCallRabbitTemplateWithCorrectArguments() throws JsonProcessingException {
+    	ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+		
         mqProducer.send(order);
 
-        verify(rabbitTemplate, times(1)).convertAndSend(eq("test-queue"), anyString());
+        verify(sqsTemplate).send("order-payment", writer.writeValueAsString(order));
     }
 
-    @Test
-    void sendShouldThrowAmqpExceptionWhenRabbitTemplateFails() {
-        doThrow(new AmqpException("AMQP error")).when(rabbitTemplate).convertAndSend(anyString(), anyString());
-
-        Assertions.assertThrows(AmqpException.class, () -> mqProducer.send(order));
-    }
 }

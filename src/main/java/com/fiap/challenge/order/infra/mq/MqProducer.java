@@ -2,7 +2,6 @@ package com.fiap.challenge.order.infra.mq;
 
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,15 +11,17 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fiap.challenge.order.application.domain.models.Order;
 
+import io.awspring.cloud.sqs.operations.SqsTemplate;
+
 @Component
 public class MqProducer {
 
     private final Queue queue;
 
-	private RabbitTemplate rabbitTemplate;
+	private SqsTemplate sqsTemplate;
 	
-	public MqProducer(@Autowired RabbitTemplate rabbitTemplate, Queue queue) {
-		this.rabbitTemplate = rabbitTemplate;
+	public MqProducer(@Autowired SqsTemplate sqsTemplate, Queue queue) {
+		this.sqsTemplate = sqsTemplate;
 		this.queue = queue;
 	}
 	
@@ -28,7 +29,7 @@ public class MqProducer {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
 		ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
-		rabbitTemplate.convertAndSend(this.queue.getName(), writer.writeValueAsString(order));
+		sqsTemplate.send(this.queue.getName(), writer.writeValueAsString(order));
 	}
 	
 	

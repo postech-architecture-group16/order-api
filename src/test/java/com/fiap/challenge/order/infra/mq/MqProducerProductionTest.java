@@ -1,8 +1,5 @@
 package com.fiap.challenge.order.infra.mq;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,26 +9,28 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fiap.challenge.order.application.domain.models.Order;
 import com.fiap.challenge.order.application.domain.models.OrderProduct;
+
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class MqProducerProductionTest {
 
-	@Mock
-    private RabbitTemplate rabbitTemplate;
+    @Mock
+    private SqsTemplate sqsTemplate;
 
     @Mock
     private Queue productionQueue;
@@ -40,7 +39,7 @@ class MqProducerProductionTest {
     private MqProducerProduction mqProducerProduction;
 
     private Order order;
-    
+
     @BeforeEach
     void setUp() {
         order = new Order(
@@ -50,27 +49,25 @@ class MqProducerProductionTest {
             1L,
             LocalDateTime.now(),
             List.of(new OrderProduct(UUID.randomUUID(),
-            		BigDecimal.valueOf(50.00),
-            		"product1",
-            		LocalDateTime.now())),
+                BigDecimal.valueOf(50.00),
+                "product1",
+                LocalDateTime.now())),
             "paymentId",
             Boolean.TRUE
         );
 
-        when(productionQueue.getName()).thenReturn("test-queue");
+        // Mock the queue name
+        when(productionQueue.getName()).thenReturn("order-production");
     }
 
     @Test
-    void sendShouldCallRabbitTemplateWithCorrectArguments() throws JsonProcessingException {
+    void sendShouldCallSqsTemplateWithCorrectArguments() throws JsonProcessingException {
+    	ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+		
         mqProducerProduction.send(order);
 
-        verify(rabbitTemplate, times(1)).convertAndSend(eq("test-queue"), anyString());
-    }
-
-    @Test
-    void sendShouldThrowAmqpExceptionWhenRabbitTemplateFails() {
-        doThrow(new AmqpException("AMQP error")).when(rabbitTemplate).convertAndSend(anyString(), anyString());
-
-        Assertions.assertThrows(AmqpException.class, () -> mqProducerProduction.send(order));
+        verify(sqsTemplate).send("order-production", writer.writeValueAsString(order));
     }
 }

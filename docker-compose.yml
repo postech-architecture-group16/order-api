@@ -42,19 +42,6 @@ services:
       - postgres-db-production:/var/lib/postgresql-production/data
     networks:
       - sonar_net
-  rabbitmq:
-      image: rabbitmq:3.9-management
-      restart: always
-      ports:
-        - "5672:5672"
-        - "15672:15672" 
-      volumes:
-        - rabbitmq_data:/var/lib/rabbitmq
-        - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
-        - ./definitions.json:/etc/rabbitmq/definitions.json
-        - ./rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
-      networks:
-        - sonar_net
   mongodb:
     image: mongo:latest
     restart: always
@@ -65,7 +52,6 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
 volumes:
-    rabbitmq_data:
     sonar_data:
     sonar_logs:
     postgres-db:
