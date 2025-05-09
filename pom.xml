@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.fiap.challenge</groupId>
 	<artifactId>order-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>order-api</name>
 	<description>Microsserviço responsavel pelo gerenciamento de pedidos.</description>
 	<url/>

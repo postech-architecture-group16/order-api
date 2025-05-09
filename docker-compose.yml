@@ -28,6 +28,20 @@ services:
       - postgres-db:/var/lib/postgresql/data
     networks:
       - sonar_net
+  postgres-db-production:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: postgres
+      PGPORT: 5434
+    ports:
+      - 5434:5434
+    volumes:
+      - postgres-db-production:/var/lib/postgresql-production/data
+    networks:
+      - sonar_net
   rabbitmq:
       image: rabbitmq:3.9-management
       restart: always
@@ -55,6 +69,7 @@ volumes:
     sonar_data:
     sonar_logs:
     postgres-db:
+    postgres-db-production:
 networks:
   sonar_net:
     driver: bridge
