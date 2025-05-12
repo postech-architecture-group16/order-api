@@ -42,15 +42,6 @@ services:
       - postgres-db-production:/var/lib/postgresql-production/data
     networks:
       - sonar_net
-  mongodb:
-    image: mongo:latest
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      - MONGO_INITDB_DATABASE=fiap
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
 volumes:
     sonar_data:
     sonar_logs:
