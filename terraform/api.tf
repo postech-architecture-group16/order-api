@@ -94,7 +94,7 @@ resource "kubernetes_deployment" "order_deployment" {
           }
 
           env {
-            name = "SPRING_DATASOURCE_URL"
+            name = "POSTGRES_HOST"
             value_from {
               secret_key_ref {
                 name = "order-secret"
@@ -104,7 +104,7 @@ resource "kubernetes_deployment" "order_deployment" {
           }
 
           env {
-            name = "SPRING_DATASOURCE_USERNAME"
+            name = "POSTGRES_USER"
             value_from {
               secret_key_ref {
                 name = "order-secret"
@@ -114,7 +114,7 @@ resource "kubernetes_deployment" "order_deployment" {
           }
 
           env {
-            name = "SPRING_DATASOURCE_PASSWORD"
+            name = "POSTGRES_PASSWORD"
             value_from {
               secret_key_ref {
                 name = "order-secret"
