@@ -97,7 +97,7 @@ resource "kubernetes_deployment" "order_deployment" {
             name = "SPRING_DATASOURCE_URL"
             value_from {
               secret_key_ref {
-                name = "tech-challenge-order-secret"
+                name = "order-secret"
                 key  = "db_url"
               }
             }
@@ -107,7 +107,7 @@ resource "kubernetes_deployment" "order_deployment" {
             name = "SPRING_DATASOURCE_USERNAME"
             value_from {
               secret_key_ref {
-                name = "tech-challenge-order-secret"
+                name = "order-secret"
                 key  = "db_username"
               }
             }
@@ -117,7 +117,7 @@ resource "kubernetes_deployment" "order_deployment" {
             name = "SPRING_DATASOURCE_PASSWORD"
             value_from {
               secret_key_ref {
-                name = "tech-challenge-order-secret"
+                name = "order-secret"
                 key  = "db_password"
               }
             }
@@ -127,7 +127,7 @@ resource "kubernetes_deployment" "order_deployment" {
             name = "AWS_ACCESS_KEY_ID"
             value_from {
               secret_key_ref {
-                name = "tech-challenge-order-secret"
+                name = "order-secret"
                 key  = "aws_access_key_id"
               }
             }
@@ -137,7 +137,7 @@ resource "kubernetes_deployment" "order_deployment" {
             name = "AWS_SECRET_ACCESS_KEY"
             value_from {
               secret_key_ref {
-                name = "tech-challenge-order-secret"
+                name = "order-secret"
                 key  = "aws_secret_access_key"
               }
             }
@@ -147,7 +147,7 @@ resource "kubernetes_deployment" "order_deployment" {
             name = "AWS_SESSION_TOKEN"
             value_from {
               secret_key_ref {
-                name = "tech-challenge-order-secret"
+                name = "order-secret"
                 key  = "aws_session_token"
               }
             }
