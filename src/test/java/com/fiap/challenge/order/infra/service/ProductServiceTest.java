@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fiap.challenge.order.application.domain.models.Product;
 import com.fiap.challenge.order.application.domain.models.enums.CategorieEnums;
-import com.fiap.challenge.order.infra.database.entities.OrderEntity;
 import com.fiap.challenge.order.infra.database.entities.ProductEntity;
 import com.fiap.challenge.order.infra.database.repositories.ProductRepository;
 
