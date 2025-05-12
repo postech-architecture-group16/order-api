@@ -6,7 +6,7 @@ variable "aws_region" {
 
 variable "eks_cluster_name" {
   type        = string
-  default     = "tech-challenge-eks-cluster"
+  default     = "fiap-tech-challenge-eks-cluster"
   description = "EKS Cluster name"
 }
 
@@ -45,7 +45,7 @@ variable "AWS_SESSION_TOKEN" {
 
 variable "secret_name" {
   type        = string
-  default     = "tc_order_db_credentials_secret"
+  default     = "tc-order-db-credentials"
   description = "secret_name"
 }
 
