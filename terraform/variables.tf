@@ -45,7 +45,7 @@ variable "AWS_SESSION_TOKEN" {
 
 variable "secret_name" {
   type        = string
-  default     = "tc-order-db-credentials"
+  default     = "tech-challenge-order-database-credentials"
   description = "secret_name"
 }
 
