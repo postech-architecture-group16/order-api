@@ -18,7 +18,7 @@ variable "ecr_repository_name" {
 
 variable "server_port" {
   type        = number
-  default     = 8357
+  default     = 8090
   description = "Order App server port"
 }
 
